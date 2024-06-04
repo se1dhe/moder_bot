@@ -10,7 +10,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -23,6 +22,7 @@ import java.net.InetAddress;
 @RequiredArgsConstructor
 @Log4j2
 public class BotApplication {
+    public static DefaultTelegramBot telegramBot;
 
     private static DBUserService dbUserService;
 
@@ -31,23 +31,23 @@ public class BotApplication {
         BotApplication.dbUserService = dbUserService;
     }
 
-    public static void main(String[] args) throws TelegramApiException, IOException, ClassNotFoundException {
+    public static void main(String[] args) throws TelegramApiException, IOException {
         // Загрузка конфигурации
         Config.load();
 
         // Создание контекста Spring
-        final ConfigurableApplicationContext context = SpringApplication.run(BotApplication.class);
+        SpringApplication.run(BotApplication.class);
 
         // Запуск приложения
-        runBot(context);
+        runBot();
     }
 
-    private static void runBot(ConfigurableApplicationContext context) throws TelegramApiException, IOException, ClassNotFoundException {
+    private static void runBot() throws TelegramApiException {
         // Создание Telegram клиента
         final TelegramClient telegramClient = new OkHttpTelegramClient(Config.BOT_TOKEN);
 
         // Создание бота
-        final DefaultTelegramBot telegramBot = new DefaultTelegramBot(telegramClient);
+        telegramBot = new DefaultTelegramBot(telegramClient);
 
         // Регистрация бота
         TelegramBotsLongPollingApplication botsApplication = new TelegramBotsLongPollingApplication();
