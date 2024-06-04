@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -21,12 +21,19 @@ public class DBUserService {
         this.dbUserRepository = dbUserRepository;
     }
 
-    public void registerUser(User user) {
+    public DbUser registerUser(User user) {
         String userName = Objects.requireNonNullElse(user.getUserName(), user.getFirstName());
-        DbUser newUser = new DbUser(user.getId(), userName, 0, LocalDateTime.now());
-        if (!dbUserRepository.existsById(newUser.getId())) {
+        Long userId = user.getId();
+        Optional<DbUser> existingUserOptional = dbUserRepository.findById(userId);
+
+        if (existingUserOptional.isPresent()) {
+            log.info("Пользователь {} уже существует", existingUserOptional.get().getUserName());
+            return existingUserOptional.get();
+        } else {
+            DbUser newUser = new DbUser(userId, userName, 0, LocalDateTime.now(), user.getLanguageCode());
             dbUserRepository.save(newUser);
             log.info("Пользователь успешно зарегистрирован: {}", newUser.getUserName());
+            return newUser;
         }
     }
 

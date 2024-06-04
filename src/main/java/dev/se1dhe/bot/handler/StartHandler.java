@@ -1,5 +1,6 @@
 package dev.se1dhe.bot.handler;
 
+import dev.se1dhe.bot.model.DbUser;
 import dev.se1dhe.bot.service.DBUserService;
 import dev.se1dhe.bot.service.LocalizationService;
 import dev.se1dhe.core.bots.AbstractTelegramBot;
@@ -40,7 +41,7 @@ public class StartHandler implements ICommandHandler {
 
     @Override
     public void onCommandMessage(AbstractTelegramBot bot, Update update, Message message, List<String> args) throws TelegramApiException {
-        dbUserService.registerUser(message.getFrom());
-        BotUtil.sendMessage(bot, message, LocalizationService.getString("start.welcomeMessage"), false, false, null);
+        DbUser dbUser = dbUserService.registerUser(message.getFrom());
+        BotUtil.sendMessage(bot, message, LocalizationService.getString("start.welcomeMessage",dbUser.getLang()), false, false, null);
     }
 }

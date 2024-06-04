@@ -21,6 +21,6 @@ public class DbUser {
     private String userName;
     private int accessLevel;
     private LocalDateTime regDate;
-
+    private String lang;
 
 }
