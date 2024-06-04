@@ -32,39 +32,25 @@ public class BotApplication {
     }
 
     public static void main(String[] args) throws TelegramApiException, IOException {
-        // Загрузка конфигурации
         Config.load();
-
-        // Создание контекста Spring
         SpringApplication.run(BotApplication.class);
-
-        // Запуск приложения
         runBot();
     }
 
     private static void runBot() throws TelegramApiException {
-        // Создание Telegram клиента
         final TelegramClient telegramClient = new OkHttpTelegramClient(Config.BOT_TOKEN);
 
-        // Создание бота
         telegramBot = new DefaultTelegramBot(telegramClient);
 
-        // Регистрация бота
         TelegramBotsLongPollingApplication botsApplication = new TelegramBotsLongPollingApplication();
         botsApplication.registerBot(Config.BOT_TOKEN, telegramBot);
 
-        // Настройка валидатора уровня доступа
         telegramBot.setAccessLevelValidator(new AccessLevelValidator(dbUserService));
-
-        // Добавление обработчиков
         telegramBot.addHandler(new StartHandler(dbUserService));
-
-        // Вывод информации о системе
         printSystemInfo();
     }
 
     private static void printSystemInfo() {
-        // Вывод информации о проекте
         log.info("=== Информация о проекте ===");
         log.info("Автор проекта: {} {} {}", "se1dhe", "[t.me/se1dhe]" , "[se1dhe.dev]");
         log.info("Название проекта: {}", Config.BOT_NAME);
@@ -73,7 +59,6 @@ public class BotApplication {
         log.info("Операционная система: {}", System.getProperty("os.name"));
         log.info("=== ====");
 
-        // Получение IP-адреса сервера
         try {
             InetAddress inetAddress = InetAddress.getLocalHost();
             String ipAddress = inetAddress.getHostAddress();
@@ -82,7 +67,6 @@ public class BotApplication {
             log.error("Не удалось получить IP-адрес сервера", e);
         }
 
-        // Получение доступной ОЗУ сервера
         long totalMemory = Runtime.getRuntime().totalMemory();
         long freeMemory = Runtime.getRuntime().freeMemory();
         long usedMemory = totalMemory - freeMemory;
