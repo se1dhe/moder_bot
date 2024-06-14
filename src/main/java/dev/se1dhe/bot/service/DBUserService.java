@@ -27,7 +27,6 @@ public class DBUserService {
         Optional<DbUser> existingUserOptional = dbUserRepository.findById(userId);
 
         if (existingUserOptional.isPresent()) {
-            log.info("Пользователь {} уже существует", existingUserOptional.get().getUserName());
             return existingUserOptional.get();
         } else {
             DbUser newUser = new DbUser(userId, userName, 0, LocalDateTime.now(), user.getLanguageCode());

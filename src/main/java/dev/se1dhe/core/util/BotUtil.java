@@ -31,11 +31,11 @@ public class BotUtil {
         bot.execute(msg);
     }
 
-    public static <T extends TelegramClient> Message sendMessage(T bot, Message message, String text, boolean replyToMessage, boolean useMarkDown, ReplyKeyboard replayMarkup) throws TelegramApiException {
+    public static <T extends TelegramClient> Message sendMessage(T bot, Message message, String text, boolean replyToMessage, boolean useHtml, ReplyKeyboard replayMarkup) throws TelegramApiException {
         final SendMessage msg = SendMessage.builder().
                 chatId(message.getChat().getId()).
                 text(text).
-                parseMode(useMarkDown ? ParseMode.MARKDOWNV2 : null).
+                parseMode(useHtml ? ParseMode.HTML : null).
                 replyToMessageId(replyToMessage ? message.getMessageId() : null).
                 replyMarkup(replayMarkup).
                 build();
