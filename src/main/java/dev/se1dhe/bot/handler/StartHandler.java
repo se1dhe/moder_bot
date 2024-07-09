@@ -2,13 +2,13 @@ package dev.se1dhe.bot.handler;
 
 import dev.se1dhe.bot.model.DbUser;
 import dev.se1dhe.bot.service.DBUserService;
-import dev.se1dhe.bot.service.LocalizationService;
-import dev.se1dhe.bot.statemachine.enums.Event;
-import dev.se1dhe.bot.statemachine.enums.State;
+import dev.se1dhe.bot.statemachine.enums.Events;
+import dev.se1dhe.bot.statemachine.enums.States;
 import dev.se1dhe.core.bots.AbstractTelegramBot;
 import dev.se1dhe.core.handlers.ICommandHandler;
 import dev.se1dhe.core.util.BotUtil;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
@@ -23,9 +23,10 @@ import java.util.List;
 public class StartHandler implements ICommandHandler {
 
     private final DBUserService dbUserService;
-    private final StateMachine<State, Event> stateMachine;
+    private final StateMachine<States, Events> stateMachine;
 
-    public StartHandler(DBUserService dbUserService, StateMachine<State, Event> stateMachine) {
+    @Autowired
+    public StartHandler(DBUserService dbUserService, StateMachine<States, Events> stateMachine) {
         this.dbUserService = dbUserService;
         this.stateMachine = stateMachine;
     }
@@ -48,6 +49,7 @@ public class StartHandler implements ICommandHandler {
     @Override
     public void onCommandMessage(AbstractTelegramBot bot, Update update, Message message, List<String> args) throws TelegramApiException {
         DbUser dbUser = dbUserService.registerUser(message.getFrom());
+        stateMachine.sendEvent(MessageBuilder.withPayload(Events.START_EVENT).build());
         BotUtil.sendMessage(bot, message, "Привет! Как вас зовут?", true, false, null);
     }
 }

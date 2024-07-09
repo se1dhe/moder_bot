@@ -4,15 +4,13 @@ import dev.se1dhe.bot.config.Config;
 import dev.se1dhe.bot.handler.StartHandler;
 import dev.se1dhe.bot.service.AccessLevelValidator;
 import dev.se1dhe.bot.service.DBUserService;
-import dev.se1dhe.bot.statemachine.enums.Event;
-import dev.se1dhe.bot.statemachine.enums.State;
 import dev.se1dhe.core.bots.DefaultTelegramBot;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.statemachine.StateMachine;
+import org.springframework.context.ApplicationContext;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -29,21 +27,19 @@ public class BotApplication {
 
     private static DBUserService dbUserService;
 
-    private static StateMachine<State, Event> stateMachine;
     @Autowired
-    public BotApplication(DBUserService dbUserService, StateMachine<State, Event> stateMachine) {
+    public BotApplication(DBUserService dbUserService) {
         BotApplication.dbUserService = dbUserService;
-        BotApplication.stateMachine = stateMachine;
     }
 
     public static void main(String[] args) throws TelegramApiException, IOException {
         Config.load();
-        SpringApplication.run(BotApplication.class);
+        ApplicationContext context = SpringApplication.run(BotApplication.class, args);
 
-        runBot();
+        runBot(context);
     }
 
-    private static void runBot() throws TelegramApiException {
+    private static void runBot(ApplicationContext context) throws TelegramApiException {
         final TelegramClient telegramClient = new OkHttpTelegramClient(Config.BOT_TOKEN);
 
         telegramBot = new DefaultTelegramBot(telegramClient);
@@ -52,7 +48,8 @@ public class BotApplication {
         botsApplication.registerBot(Config.BOT_TOKEN, telegramBot);
 
         telegramBot.setAccessLevelValidator(new AccessLevelValidator(dbUserService));
-        telegramBot.addHandler(new StartHandler(dbUserService, stateMachine));
+        StartHandler startHandler = context.getBean(StartHandler.class);
+        telegramBot.addHandler(startHandler);
         printSystemInfo();
     }
 
