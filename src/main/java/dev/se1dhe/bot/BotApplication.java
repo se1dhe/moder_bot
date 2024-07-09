@@ -27,9 +27,12 @@ public class BotApplication {
 
     private static DBUserService dbUserService;
 
+    private final StartHandler startHandler;
+
     @Autowired
-    public BotApplication(DBUserService dbUserService) {
+    public BotApplication(DBUserService dbUserService, StartHandler startHandler) {
         BotApplication.dbUserService = dbUserService;
+        this.startHandler = startHandler;
     }
 
     public static void main(String[] args) throws TelegramApiException, IOException {
@@ -49,7 +52,7 @@ public class BotApplication {
 
         telegramBot.setAccessLevelValidator(new AccessLevelValidator(dbUserService));
         StartHandler startHandler = context.getBean(StartHandler.class);
-        telegramBot.addHandler(startHandler);
+        telegramBot.addHandler(startHandler);  // Регистрируем StartHandler
         printSystemInfo();
     }
 

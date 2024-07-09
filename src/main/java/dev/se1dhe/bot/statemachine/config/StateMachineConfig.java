@@ -12,7 +12,6 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
 import org.springframework.statemachine.state.State;
 
-
 @Configuration
 @EnableStateMachine
 public class StateMachineConfig extends StateMachineConfigurerAdapter<States, Events> {
@@ -30,6 +29,8 @@ public class StateMachineConfig extends StateMachineConfigurerAdapter<States, Ev
                 .withStates()
                 .initial(States.START)
                 .state(States.ASK_NAME)
+                .state(States.ASK_AGE)
+                .state(States.GREET)
                 .end(States.END);
     }
 
@@ -40,11 +41,17 @@ public class StateMachineConfig extends StateMachineConfigurerAdapter<States, Ev
                 .source(States.START).target(States.ASK_NAME).event(Events.START_EVENT)
                 .and()
                 .withExternal()
-                .source(States.ASK_NAME).target(States.END).event(Events.ASK_NAME_EVENT);
+                .source(States.ASK_NAME).target(States.ASK_AGE).event(Events.NAME_RECEIVED)
+                .and()
+                .withExternal()
+                .source(States.ASK_AGE).target(States.GREET).event(Events.AGE_RECEIVED)
+                .and()
+                .withExternal()
+                .source(States.GREET).target(States.END).event(Events.GREET_USER);
     }
 
     @Bean
-    public static StateMachineListenerAdapter<States, Events> listener() {
+    public StateMachineListenerAdapter<States, Events> listener() {
         return new StateMachineListenerAdapter<States, Events>() {
             @Override
             public void stateChanged(State<States, Events> from, State<States, Events> to) {
