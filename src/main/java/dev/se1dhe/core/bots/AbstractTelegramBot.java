@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.SetChatPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.*;
 import org.telegram.telegrambots.meta.api.methods.stickers.*;
+import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberUpdated;
@@ -426,6 +427,11 @@ public class AbstractTelegramBot implements LongPollingUpdateConsumer, TelegramC
     }
 
     @Override
+    public Boolean execute(SetWebhook setWebhook) throws TelegramApiException {
+        return null;
+    }
+
+    @Override
     public Message execute(SendVideo sendVideo) throws TelegramApiException {
         return telegramClient.execute(sendVideo);
     }
@@ -453,6 +459,11 @@ public class AbstractTelegramBot implements LongPollingUpdateConsumer, TelegramC
     @Override
     public List<Message> execute(SendMediaGroup sendMediaGroup) throws TelegramApiException {
         return telegramClient.execute(sendMediaGroup);
+    }
+
+    @Override
+    public List<Message> execute(SendPaidMedia sendPaidMedia) throws TelegramApiException {
+        return List.of();
     }
 
     @Override
@@ -516,6 +527,11 @@ public class AbstractTelegramBot implements LongPollingUpdateConsumer, TelegramC
     }
 
     @Override
+    public CompletableFuture<Boolean> executeAsync(SetWebhook setWebhook) {
+        return null;
+    }
+
+    @Override
     public CompletableFuture<Message> executeAsync(SendVideo sendVideo) {
         return telegramClient.executeAsync(sendVideo);
     }
@@ -543,6 +559,11 @@ public class AbstractTelegramBot implements LongPollingUpdateConsumer, TelegramC
     @Override
     public CompletableFuture<List<Message>> executeAsync(SendMediaGroup sendMediaGroup) {
         return telegramClient.executeAsync(sendMediaGroup);
+    }
+
+    @Override
+    public CompletableFuture<List<Message>> executeAsync(SendPaidMedia sendPaidMedia) {
+        return null;
     }
 
     @Override

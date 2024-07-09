@@ -2,7 +2,6 @@ package dev.se1dhe.bot;
 
 import dev.se1dhe.bot.config.Config;
 import dev.se1dhe.bot.handler.StartHandler;
-import dev.se1dhe.bot.handler.UserAnswerHandler;
 import dev.se1dhe.bot.service.AccessLevelValidator;
 import dev.se1dhe.bot.service.DBUserService;
 import dev.se1dhe.bot.statemachine.enums.Event;
@@ -54,7 +53,6 @@ public class BotApplication {
 
         telegramBot.setAccessLevelValidator(new AccessLevelValidator(dbUserService));
         telegramBot.addHandler(new StartHandler(dbUserService, stateMachine));
-        telegramBot.addHandler(new UserAnswerHandler(stateMachine));
         printSystemInfo();
     }
 

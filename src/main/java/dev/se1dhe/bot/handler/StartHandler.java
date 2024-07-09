@@ -48,9 +48,6 @@ public class StartHandler implements ICommandHandler {
     @Override
     public void onCommandMessage(AbstractTelegramBot bot, Update update, Message message, List<String> args) throws TelegramApiException {
         DbUser dbUser = dbUserService.registerUser(message.getFrom());
-        stateMachine.startReactively().block();
-        System.out.println("Sending event EVENT1...");
-        stateMachine.sendEvent(MessageBuilder.withPayload(Event.EVENT1).build());
         BotUtil.sendMessage(bot, message, "Привет! Как вас зовут?", true, false, null);
     }
 }
