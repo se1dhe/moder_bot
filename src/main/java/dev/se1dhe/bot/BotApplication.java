@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -22,17 +23,16 @@ import java.net.InetAddress;
 @SpringBootApplication
 @RequiredArgsConstructor
 @Log4j2
+@EnableScheduling
 public class BotApplication {
     public static DefaultTelegramBot telegramBot;
 
     private static DBUserService dbUserService;
 
-    private final StartHandler startHandler;
 
     @Autowired
-    public BotApplication(DBUserService dbUserService, StartHandler startHandler) {
+    public BotApplication(DBUserService dbUserService) {
         BotApplication.dbUserService = dbUserService;
-        this.startHandler = startHandler;
     }
 
     public static void main(String[] args) throws TelegramApiException, IOException {
@@ -51,8 +51,8 @@ public class BotApplication {
         botsApplication.registerBot(Config.BOT_TOKEN, telegramBot);
 
         telegramBot.setAccessLevelValidator(new AccessLevelValidator(dbUserService));
-        StartHandler startHandler = context.getBean(StartHandler.class);
-        telegramBot.addHandler(startHandler);  // Регистрируем StartHandler
+        telegramBot.addHandler(context.getBean(StartHandler.class));
+
         printSystemInfo();
     }
 
@@ -81,3 +81,4 @@ public class BotApplication {
 
     }
 }
+

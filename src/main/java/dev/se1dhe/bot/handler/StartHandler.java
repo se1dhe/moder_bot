@@ -23,12 +23,11 @@ import java.util.List;
 public class StartHandler implements ICommandHandler, IMessageHandler {
 
     private final DBUserService dbUserService;
-    private final StateMachine<States, Events> stateMachine;
 
     @Autowired
-    public StartHandler(DBUserService dbUserService, StateMachine<States, Events> stateMachine) {
+    public StartHandler(DBUserService dbUserService) {
         this.dbUserService = dbUserService;
-        this.stateMachine = stateMachine;
+
     }
 
     @Override
@@ -48,38 +47,12 @@ public class StartHandler implements ICommandHandler, IMessageHandler {
 
     @Override
     public void onCommandMessage(AbstractTelegramBot bot, Update update, Message message, List<String> args) throws TelegramApiException {
-        stateMachine.sendEvent(MessageBuilder.withPayload(Events.START_EVENT).build());
         BotUtil.sendMessage(bot, message, "Привет! Как вас зовут?", true, false, null);
     }
 
     @Override
     public boolean onMessage(AbstractTelegramBot bot, Update update, Message message) throws TelegramApiException {
-        String text = message.getText();
-        switch (stateMachine.getState().getId()) {
-            case ASK_NAME:
-                onNameReceived(bot, update, message, List.of(text));
-                return true;
-            case ASK_AGE:
-                onAgeReceived(bot, update, message, List.of(text));
-                return true;
-            default:
-                return false;
-        }
+        return false;
     }
 
-    private void onNameReceived(AbstractTelegramBot bot, Update update, Message message, List<String> args) throws TelegramApiException {
-        String name = args.get(0);
-        stateMachine.getExtendedState().getVariables().put("name", name);
-        stateMachine.sendEvent(MessageBuilder.withPayload(Events.NAME_RECEIVED).build());
-        BotUtil.sendMessage(bot, message, "Сколько вам лет?", true, false, null);
-    }
-
-    private void onAgeReceived(AbstractTelegramBot bot, Update update, Message message, List<String> args) throws TelegramApiException {
-        String age = args.get(0);
-        String name = (String) stateMachine.getExtendedState().getVariables().get("name");
-        stateMachine.sendEvent(MessageBuilder.withPayload(Events.AGE_RECEIVED).build());
-        String greeting = "Привет, " + name + "! Вам " + age + " лет.";
-        BotUtil.sendMessage(bot, message, greeting, true, false, null);
-        stateMachine.sendEvent(MessageBuilder.withPayload(Events.GREET_USER).build());
-    }
 }
